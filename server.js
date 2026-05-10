@@ -1,13 +1,24 @@
-require('dotenv').config(); // ← LIGNE 1, avant tout le reste
+'use strict';
+
+require('dotenv').config();
 
 const app  = require('./index');
+const { testConnection } = require('./src/config/database');
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log('');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`  ✅  Serveur démarré avec succès`);
-  console.log(`  🌍  http://localhost:${PORT}`);
-  console.log(`  🌿  Environnement : ${process.env.NODE_ENV}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-});
+async function bootstrap() {
+  // 1. Tester la connexion DB
+  await testConnection();
+
+  // 2. Démarrer le serveur
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(`  🚀  Serveur démarré avec succès`);
+    console.log(`  🌍  http://localhost:${PORT}`);
+    console.log(`  🌿  Environnement : ${process.env.NODE_ENV}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  });
+}
+
+bootstrap();
