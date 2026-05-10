@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const app  = require('./index');
 const { testConnection } = require('./src/config/database');
+require('./src/config/firebase');
 const PORT = process.env.PORT || 3000;
 
 async function bootstrap() {
