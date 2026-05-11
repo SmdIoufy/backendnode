@@ -1,12 +1,12 @@
 'use strict';
 
-const express        = require('express');
-const cors           = require('cors');
-const helmet         = require('helmet');
-const swaggerJsdoc   = require('swagger-jsdoc');
-const swaggerUi      = require('swagger-ui-express');
-const swaggerOptions = require('./src/docs/swagger.config');
-const usersRoutes    = require('./src/modules/users/users.routes');
+const express          = require('express');
+const cors             = require('cors');
+const helmet           = require('helmet');
+const { apiReference } = require('@scalar/express-api-reference');
+const swaggerJsdoc     = require('swagger-jsdoc');
+const swaggerOptions   = require('./src/docs/swagger.config');
+const errorHandler     = require('./src/middlewares/error.middleware');
 
 const app = express();
 
@@ -16,24 +16,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── Swagger spec ───────────────────────────────────────────────
+// ── Swagger ────────────────────────────────────────────────────
 const openapiSpec = swaggerJsdoc(swaggerOptions);
 
-// ── Swagger UI ─────────────────────────────────────────────────
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, {
-  swaggerOptions: {
-    docExpansion:         'none',
-    persistAuthorization: true,
-    filter:               true,
-  },
+app.use('/api-docs', apiReference({
+  spec:   { content: openapiSpec },
+  theme:  'purple',
+  layout: 'sidebar',
 }));
 
-// ── Spec JSON brut ─────────────────────────────────────────────
 app.get('/api-docs.json', (req, res) => {
   res.json(openapiSpec);
 });
 
-// ── Route racine ───────────────────────────────────────────────
+// ── Routes ─────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -42,19 +38,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// ── Route de test TEMPORAIRE (dev uniquement) ──────────────────
-if (process.env.NODE_ENV === 'development') {
-  app.get('/api/v1/test/users', async (req, res) => {
-    const { db } = require('./src/config/database');
-    const users = await db('BaseEntity as b')
-      .join('User as u', 'u.id', 'b.id')
-      .select('b.id', 'u.email', 'u.displayName', 'u.role', 'u.isActive');
-    res.json({ success: true, data: users });
-  });
-}
-
-// ── Routes API ─────────────────────────────────────────────────
-app.use('/api/v1/users', usersRoutes);
+// Tes routes API ici
+// app.use('/api/v1/users', require('./src/modules/users/users.routes'));
 
 // ── 404 ────────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -63,5 +48,8 @@ app.use((req, res) => {
     message: `Route non trouvée → ${req.method} ${req.originalUrl}`,
   });
 });
+
+// ── Error Handler — TOUJOURS EN DERNIER ───────────────────────
+app.use(errorHandler);
 
 module.exports = app;
