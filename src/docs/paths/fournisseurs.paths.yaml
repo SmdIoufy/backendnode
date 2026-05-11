@@ -1,0 +1,171 @@
+paths:
+  /fournisseurs:
+    get:
+      tags: [Fournisseurs]
+      summary: Lister les fournisseurs
+      operationId: listFournisseurs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: actif
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Liste des fournisseurs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFournisseurs'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags: [Fournisseurs]
+      summary: Créer un fournisseur
+      operationId: createFournisseur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFournisseurDto'
+            example:
+              nom: "Ciments du Sahel"
+              telephone: "+221 77 999 88 77"
+              email: "contact@cimentssahel.sn"
+      responses:
+        '201':
+          description: Fournisseur créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Fournisseur'
+        '400':
+          description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /fournisseurs/{id}:
+    get:
+      tags: [Fournisseurs]
+      summary: Récupérer un fournisseur
+      operationId: getFournisseurById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Fournisseur trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Fournisseur'
+        '404':
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags: [Fournisseurs]
+      summary: Modifier un fournisseur
+      operationId: updateFournisseur
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFournisseurDto'
+      responses:
+        '200':
+          description: Fournisseur mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Fournisseur'
+        '404':
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags: [Fournisseurs]
+      summary: Désactiver un fournisseur
+      operationId: deleteFournisseur
+      description: Soft delete — met actif à false
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Fournisseur désactivé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Fournisseur désactivé avec succès"
+        '404':
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

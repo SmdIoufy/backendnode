@@ -1,0 +1,63 @@
+components:
+  schemas:
+    Fournisseur:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            nom:
+              type: string
+              example: "Ciments du Sahel"
+            telephone:
+              type: string
+              nullable: true
+              example: "+221 77 999 88 77"
+            email:
+              type: string
+              nullable: true
+              example: "contact@cimentssahel.sn"
+            actif:
+              type: boolean
+              example: true
+
+    CreateFournisseurDto:
+      type: object
+      required: [nom]
+      properties:
+        nom:
+          type: string
+          minLength: 2
+          example: "Ciments du Sahel"
+        telephone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    UpdateFournisseurDto:
+      type: object
+      properties:
+        nom:
+          type: string
+          minLength: 2
+        telephone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        actif:
+          type: boolean
+
+    PaginatedFournisseurs:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Fournisseur'

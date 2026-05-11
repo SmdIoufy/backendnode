@@ -41,6 +41,7 @@ app.get('/', (req, res) => {
 // ── Routes API ─────────────────────────────────────────────────
 app.use('/api/v1/users',   require('./src/modules/users/users.routes'));
 app.use('/api/v1/clients', require('./src/modules/clients/clients.routes'));
+app.use('/api/v1/fournisseurs', require('./src/modules/fournisseurs/fournisseurs.routes'));
 
 // ── 404 — TOUJOURS APRÈS LES ROUTES ───────────────────────────
 app.use((req, res) => {
