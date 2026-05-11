@@ -6,6 +6,7 @@ const helmet         = require('helmet');
 const swaggerJsdoc   = require('swagger-jsdoc');
 const swaggerUi      = require('swagger-ui-express');
 const swaggerOptions = require('./src/docs/swagger.config');
+const usersRoutes    = require('./src/modules/users/users.routes');
 
 const app = express();
 
@@ -21,9 +22,9 @@ const openapiSpec = swaggerJsdoc(swaggerOptions);
 // ── Swagger UI ─────────────────────────────────────────────────
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, {
   swaggerOptions: {
-    docExpansion:       'none',
+    docExpansion:         'none',
     persistAuthorization: true,
-    filter:             true,
+    filter:               true,
   },
 }));
 
@@ -32,7 +33,7 @@ app.get('/api-docs.json', (req, res) => {
   res.json(openapiSpec);
 });
 
-// ── Routes ─────────────────────────────────────────────────────
+// ── Route racine ───────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -40,6 +41,20 @@ app.get('/', (req, res) => {
     docs:    'http://localhost:3000/api-docs',
   });
 });
+
+// ── Route de test TEMPORAIRE (dev uniquement) ──────────────────
+if (process.env.NODE_ENV === 'development') {
+  app.get('/api/v1/test/users', async (req, res) => {
+    const { db } = require('./src/config/database');
+    const users = await db('BaseEntity as b')
+      .join('User as u', 'u.id', 'b.id')
+      .select('b.id', 'u.email', 'u.displayName', 'u.role', 'u.isActive');
+    res.json({ success: true, data: users });
+  });
+}
+
+// ── Routes API ─────────────────────────────────────────────────
+app.use('/api/v1/users', usersRoutes);
 
 // ── 404 ────────────────────────────────────────────────────────
 app.use((req, res) => {
