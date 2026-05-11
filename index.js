@@ -29,7 +29,7 @@ app.get('/api-docs.json', (req, res) => {
   res.json(openapiSpec);
 });
 
-// ── Routes ─────────────────────────────────────────────────────
+// ── Route racine ───────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -38,10 +38,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// Tes routes API ici
-// app.use('/api/v1/users', require('./src/modules/users/users.routes'));
+// ── Routes API ─────────────────────────────────────────────────
+app.use('/api/v1/users',   require('./src/modules/users/users.routes'));
+app.use('/api/v1/clients', require('./src/modules/clients/clients.routes'));
 
-// ── 404 ────────────────────────────────────────────────────────
+// ── 404 — TOUJOURS APRÈS LES ROUTES ───────────────────────────
 app.use((req, res) => {
   res.status(404).json({
     success: false,

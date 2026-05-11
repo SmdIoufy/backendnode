@@ -1,0 +1,65 @@
+components:
+  schemas:
+    Client:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            nom:
+              type: string
+              example: "Diallo BTP"
+            telephone:
+              type: string
+              nullable: true
+              example: "+221 77 111 22 33"
+            email:
+              type: string
+              nullable: true
+              example: "diallo@btp.sn"
+            actif:
+              type: boolean
+              example: true
+
+    CreateClientDto:
+      type: object
+      required: [nom]
+      properties:
+        nom:
+          type: string
+          minLength: 2
+          example: "Diallo BTP"
+        telephone:
+          type: string
+          nullable: true
+          example: "+221 77 111 22 33"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "diallo@btp.sn"
+
+    UpdateClientDto:
+      type: object
+      properties:
+        nom:
+          type: string
+          minLength: 2
+        telephone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        actif:
+          type: boolean
+
+    PaginatedClients:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Client'
