@@ -1,0 +1,65 @@
+components:
+  schemas:
+    User:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            firebaseUid:
+              type: string
+              readOnly: true
+              example: "abc123firebase"
+            email:
+              type: string
+              format: email
+              example: "admin@gestquick.com"
+            displayName:
+              type: string
+              nullable: true
+              example: "Samba Diallo"
+            phoneNumber:
+              type: string
+              nullable: true
+              example: "+221 77 123 45 67"
+            role:
+              type: string
+              enum: [GERANT, ADMIN]
+              example: "GERANT"
+            isActive:
+              type: boolean
+              example: true
+            isBlocked:
+              type: boolean
+              example: false
+            loginCount:
+              type: integer
+              example: 12
+            lastLoginAt:
+              type: string
+              format: date-time
+              nullable: true
+
+    UpdateUserDto:
+      type: object
+      properties:
+        displayName:
+          type: string
+        phoneNumber:
+          type: string
+        role:
+          type: string
+          enum: [GERANT, ADMIN]
+        isActive:
+          type: boolean
+        isBlocked:
+          type: boolean
+
+    PaginatedUsers:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'

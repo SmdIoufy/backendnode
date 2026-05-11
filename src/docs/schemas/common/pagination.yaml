@@ -1,0 +1,29 @@
+components:
+  schemas:
+    PageMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 143
+        totalPages:
+          type: integer
+          example: 8
+
+    PaginatedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items: {}
+        meta:
+          $ref: '#/components/schemas/PageMeta'

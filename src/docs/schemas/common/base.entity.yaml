@@ -1,0 +1,26 @@
+components:
+  schemas:
+    BaseEntity:
+      type: object
+      required: [id, dateCreation, dateModification]
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        dateCreation:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-05-04T08:30:00.000Z"
+        dateModification:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-05-10T14:45:00.000Z"
+        version:
+          type: integer
+          readOnly: true
+          description: Verrou optimiste
+          example: 0

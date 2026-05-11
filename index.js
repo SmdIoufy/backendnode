@@ -1,34 +1,52 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+'use strict';
 
+const express        = require('express');
+const cors           = require('cors');
+const helmet         = require('helmet');
+const swaggerJsdoc   = require('swagger-jsdoc');
+const swaggerUi      = require('swagger-ui-express');
+const swaggerOptions = require('./src/docs/swagger.config');
 
 const app = express();
 
-// Middleware
+// ── Middlewares ────────────────────────────────────────────────
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// ── Swagger spec ───────────────────────────────────────────────
+const openapiSpec = swaggerJsdoc(swaggerOptions);
+
+// ── Swagger UI ─────────────────────────────────────────────────
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, {
+  swaggerOptions: {
+    docExpansion:       'none',
+    persistAuthorization: true,
+    filter:             true,
+  },
+}));
+
+// ── Spec JSON brut ─────────────────────────────────────────────
+app.get('/api-docs.json', (req, res) => {
+  res.json(openapiSpec);
+});
+
+// ── Routes ─────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Bienvenue sur l\'API Backend',
-    status: 'online'
+  res.json({
+    success: true,
+    message: 'Bienvenue sur GESTquiCK API',
+    docs:    'http://localhost:3000/api-docs',
   });
 });
 
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    status: 'success',
-    message: 'API fonctionnelle',
-    timestamp: new Date()
-  });
-});
-
-// Gestion des erreurs 404
+// ── 404 ────────────────────────────────────────────────────────
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route non trouvée' });
+  res.status(404).json({
+    success: false,
+    message: `Route non trouvée → ${req.method} ${req.originalUrl}`,
+  });
 });
 
 module.exports = app;
