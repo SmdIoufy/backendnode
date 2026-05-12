@@ -1,0 +1,123 @@
+paths:
+  /ventes:
+    get:
+      tags: [Ventes]
+      summary: Lister les ventes
+      operationId: listVentes
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: statut
+          in: query
+          schema:
+            type: string
+            enum: [BROUILLON, VALIDEE, ANNULEE]
+        - name: Cli_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Liste des ventes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVentes'
+
+    post:
+      tags: [Ventes]
+      summary: Créer une vente
+      operationId: createVente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVenteDto'
+      responses:
+        '201':
+          description: Vente créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Vente'
+
+  /ventes/{id}:
+    get:
+      tags: [Ventes]
+      summary: Récupérer une vente
+      operationId: getVenteById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Vente trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Vente'
+        '404':
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ventes/{id}/statut:
+    patch:
+      tags: [Ventes]
+      summary: Changer le statut d'une vente
+      operationId: updateVenteStatut
+      description: |
+        ### Transitions autorisées
+        | Statut actuel | → Statut cible | Effet |
+        |---|---|---|
+        | BROUILLON | VALIDEE | Débit stock |
+        | BROUILLON | ANNULEE | Rien |
+        | VALIDEE | ANNULEE | Crédit stock |
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVenteStatutDto'
+      responses:
+        '200':
+          description: Statut mis à jour
+        '409':
+          description: Transition invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

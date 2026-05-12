@@ -1,0 +1,105 @@
+components:
+  schemas:
+    LigneVente:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        Ven_id:
+          type: string
+          format: uuid
+        Var_id:
+          type: string
+          format: uuid
+        quantite:
+          type: integer
+          example: 5
+        prixUnitaire:
+          type: number
+          example: 2500
+        coutUnitaire:
+          type: number
+          example: 1500
+        remise:
+          type: number
+          example: 0
+
+    Vente:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            Cli_id:
+              type: string
+              format: uuid
+            reference:
+              type: string
+              example: "VNT-2026-00001"
+            date:
+              type: string
+              format: date
+            montantTotal:
+              type: number
+              example: 12500
+            statut:
+              type: string
+              enum: [BROUILLON, VALIDEE, ANNULEE]
+              example: BROUILLON
+            clientNom:
+              type: string
+              example: "Diallo BTP"
+            lignes:
+              type: array
+              items:
+                $ref: '#/components/schemas/LigneVente'
+
+    CreateLigneVenteDto:
+      type: object
+      required: [Var_id, quantite, prixUnitaire]
+      properties:
+        Var_id:
+          type: string
+          format: uuid
+        quantite:
+          type: integer
+          minimum: 1
+        prixUnitaire:
+          type: number
+          minimum: 0
+        remise:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 0
+
+    CreateVenteDto:
+      type: object
+      required: [Cli_id, lignes]
+      properties:
+        Cli_id:
+          type: string
+          format: uuid
+        lignes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateLigneVenteDto'
+
+    UpdateVenteStatutDto:
+      type: object
+      required: [statut]
+      properties:
+        statut:
+          type: string
+          enum: [VALIDEE, ANNULEE]
+
+    PaginatedVentes:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Vente'
