@@ -1,0 +1,115 @@
+components:
+  schemas:
+    LigneApprovisionnement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        Var_id:
+          type: string
+          format: uuid
+        quantite:
+          type: integer
+          example: 100
+        prixAchat:
+          type: number
+          example: 1200
+        remise:
+          type: number
+          example: 0
+        dimension:
+          type: string
+          example: "10mm"
+        familleNom:
+          type: string
+          example: "Barres de fer"
+
+    Approvisionnement:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            Four_id:
+              type: string
+              format: uuid
+            reference:
+              type: string
+              example: "APP-2026-00001"
+            date:
+              type: string
+              format: date
+            frais:
+              type: number
+              example: 5000
+            noteInterne:
+              type: string
+              nullable: true
+            statut:
+              type: string
+              enum: [BROUILLON, VALIDEE, ANNULEE]
+              example: BROUILLON
+            fournisseurNom:
+              type: string
+              example: "Ciments du Sahel"
+            lignes:
+              type: array
+              items:
+                $ref: '#/components/schemas/LigneApprovisionnement'
+
+    CreateLigneApproDto:
+      type: object
+      required: [Var_id, quantite, prixAchat]
+      properties:
+        Var_id:
+          type: string
+          format: uuid
+        quantite:
+          type: integer
+          minimum: 1
+        prixAchat:
+          type: number
+          minimum: 0
+        remise:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 0
+
+    CreateApproDto:
+      type: object
+      required: [Four_id, lignes]
+      properties:
+        Four_id:
+          type: string
+          format: uuid
+        frais:
+          type: number
+          minimum: 0
+          default: 0
+        noteInterne:
+          type: string
+          nullable: true
+        lignes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateLigneApproDto'
+
+    UpdateApproStatutDto:
+      type: object
+      required: [statut]
+      properties:
+        statut:
+          type: string
+          enum: [VALIDEE, ANNULEE]
+
+    PaginatedAppros:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Approvisionnement'

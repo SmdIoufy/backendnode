@@ -46,6 +46,7 @@ app.use('/api/v1/catalogue/categories', require('./src/modules/catalogue/categor
 app.use('/api/v1/catalogue/familles',   require('./src/modules/catalogue/familles/familles.routes'));
 app.use('/api/v1/catalogue/variantes',  require('./src/modules/catalogue/variantes/variantes.routes'));
 app.use('/api/v1/ventes', require('./src/modules/ventes/ventes.routes'));
+app.use('/api/v1/approvisionnements', require('./src/modules/approvisionnements/approvisionnements.routes'));
 
 // ── 404 — TOUJOURS APRÈS LES ROUTES ───────────────────────────
 app.use((req, res) => {
