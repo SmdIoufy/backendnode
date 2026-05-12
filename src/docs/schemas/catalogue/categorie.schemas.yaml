@@ -1,0 +1,51 @@
+components:
+  schemas:
+    Categorie:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            nom:
+              type: string
+              example: "Ferronnerie"
+            description:
+              type: string
+              nullable: true
+              example: "Produits en fer et métaux"
+            actif:
+              type: boolean
+              example: true
+
+    CreateCategorieDto:
+      type: object
+      required: [nom]
+      properties:
+        nom:
+          type: string
+          minLength: 2
+          example: "Ferronnerie"
+        description:
+          type: string
+          nullable: true
+
+    UpdateCategorieDto:
+      type: object
+      properties:
+        nom:
+          type: string
+          minLength: 2
+        description:
+          type: string
+          nullable: true
+        actif:
+          type: boolean
+
+    PaginatedCategories:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Categorie'

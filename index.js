@@ -42,6 +42,9 @@ app.get('/', (req, res) => {
 app.use('/api/v1/users',   require('./src/modules/users/users.routes'));
 app.use('/api/v1/clients', require('./src/modules/clients/clients.routes'));
 app.use('/api/v1/fournisseurs', require('./src/modules/fournisseurs/fournisseurs.routes'));
+app.use('/api/v1/catalogue/categories', require('./src/modules/catalogue/categories/categories.routes'));
+app.use('/api/v1/catalogue/familles',   require('./src/modules/catalogue/familles/familles.routes'));
+app.use('/api/v1/catalogue/variantes',  require('./src/modules/catalogue/variantes/variantes.routes'));
 
 // ── 404 — TOUJOURS APRÈS LES ROUTES ───────────────────────────
 app.use((req, res) => {

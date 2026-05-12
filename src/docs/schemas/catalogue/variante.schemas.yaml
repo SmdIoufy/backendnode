@@ -1,0 +1,89 @@
+components:
+  schemas:
+    Variante:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            Fam_id:
+              type: string
+              format: uuid
+            Sto_id:
+              type: string
+              format: uuid
+            dimension:
+              type: string
+              nullable: true
+              example: "10mm"
+            epaisseur:
+              type: string
+              nullable: true
+              example: "2mm"
+            prixVente:
+              type: number
+              example: 2500
+            prixAchatMoyen:
+              type: number
+              example: 1500
+            seuilAlerte:
+              type: integer
+              example: 10
+            actif:
+              type: boolean
+              example: true
+
+    CreateVarianteDto:
+      type: object
+      required: [Fam_id, prixVente]
+      properties:
+        Fam_id:
+          type: string
+          format: uuid
+        dimension:
+          type: string
+          nullable: true
+        epaisseur:
+          type: string
+          nullable: true
+        prixVente:
+          type: number
+          minimum: 0
+        prixAchatMoyen:
+          type: number
+          minimum: 0
+          default: 0
+        seuilAlerte:
+          type: integer
+          minimum: 0
+          default: 0
+
+    UpdateVarianteDto:
+      type: object
+      properties:
+        dimension:
+          type: string
+          nullable: true
+        epaisseur:
+          type: string
+          nullable: true
+        prixVente:
+          type: number
+          minimum: 0
+        prixAchatMoyen:
+          type: number
+          minimum: 0
+        seuilAlerte:
+          type: integer
+          minimum: 0
+        actif:
+          type: boolean
+
+    PaginatedVariantes:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Variante'

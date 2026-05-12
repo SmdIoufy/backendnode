@@ -1,0 +1,71 @@
+components:
+  schemas:
+    Famille:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            Cat_id:
+              type: string
+              format: uuid
+            categorie:
+              $ref: '#/components/schemas/Categorie'
+            nom:
+              type: string
+              example: "Barres de fer"
+            description:
+              type: string
+              nullable: true
+            uniteMesure:
+              type: string
+              nullable: true
+              example: "ML"
+            actif:
+              type: boolean
+              example: true
+
+    CreateFamilleDto:
+      type: object
+      required: [nom, Cat_id]
+      properties:
+        nom:
+          type: string
+          minLength: 2
+          example: "Barres de fer"
+        Cat_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+        uniteMesure:
+          type: string
+          nullable: true
+
+    UpdateFamilleDto:
+      type: object
+      properties:
+        nom:
+          type: string
+          minLength: 2
+        Cat_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+        uniteMesure:
+          type: string
+          nullable: true
+        actif:
+          type: boolean
+
+    PaginatedFamilles:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Famille'

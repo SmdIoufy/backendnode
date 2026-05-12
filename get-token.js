@@ -11,8 +11,11 @@ const auth = getAuth(app);
 signInWithEmailAndPassword(auth, "sambamoussadiouf@gmail.com", "smd1608")
   .then(cred => cred.user.getIdToken())
   .then(token => {
-    console.log('\n✅ TOKEN:\n');
-    console.log(token);
+    // Token sur une seule ligne sans espace
+    const cleanToken = token.replace(/\s+/g, '');
+    console.log('\n✅ TOKEN (copie tout sur une ligne):\n');
+    console.log(cleanToken);
+    console.log('\n');
   })
   .catch(err => {
     console.error('❌ Erreur:', err.message);
