@@ -1,0 +1,138 @@
+paths:
+  /statistiques/familles-plus-vendues:
+    get:
+      tags: [Statistiques]
+      summary: Familles de produits les plus vendues
+      operationId: famillesPlusVendues
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Nombre de familles à retourner
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-01-01"
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-12-31"
+      responses:
+        '200':
+          description: Familles les plus vendues
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        familleId:
+                          type: string
+                          format: uuid
+                        familleNom:
+                          type: string
+                        categorieNom:
+                          type: string
+                        totalQuantiteVendue:
+                          type: integer
+                        totalMontantVente:
+                          type: number
+                        nombreVentes:
+                          type: integer
+
+  /statistiques/variantes-plus-vendues:
+    get:
+      tags: [Statistiques]
+      summary: Variantes les plus vendues
+      operationId: variantesPlusVendues
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Variantes les plus vendues
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        varianteId:
+                          type: string
+                          format: uuid
+                        dimension:
+                          type: string
+                        familleNom:
+                          type: string
+                        categorieNom:
+                          type: string
+                        totalQuantiteVendue:
+                          type: integer
+                        totalMontantVente:
+                          type: number
+                        nombreVentes:
+                          type: integer
+
+  /statistiques/dashboard:
+    get:
+      tags: [Statistiques]
+      summary: Tableau de bord général
+      operationId: dashboard
+      responses:
+        '200':
+          description: Données du tableau de bord
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalClients:
+                        type: integer
+                      totalFournisseurs:
+                        type: integer
+                      totalVariantes:
+                        type: integer
+                      totalVentesAujourdhui:
+                        type: number
+                      totalVentesMois:
+                        type: number
+                      stockEnAlerte:
+                        type: integer
+                      ventesParStatut:
+                        type: object

@@ -49,6 +49,7 @@ app.use('/api/v1/ventes', require('./src/modules/ventes/ventes.routes'));
 app.use('/api/v1/approvisionnements', require('./src/modules/approvisionnements/approvisionnements.routes'));
 app.use('/api/v1/inventaires', require('./src/modules/inventaires/inventaires.routes'));
 app.use('/api/v1/mouvements', require('./src/modules/mouvements/mouvements.routes'));
+app.use('/api/v1/statistiques', require('./src/modules/statistiques/statistiques.routes'));
 
 // ── 404 — TOUJOURS APRÈS LES ROUTES ───────────────────────────
 app.use((req, res) => {
