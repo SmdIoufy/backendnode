@@ -1,0 +1,43 @@
+components:
+  schemas:
+    MouvementStock:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            Var_id:
+              type: string
+              format: uuid
+            Ven_id:
+              type: string
+              format: uuid
+              nullable: true
+            App_id:
+              type: string
+              format: uuid
+              nullable: true
+            Inv_id:
+              type: string
+              format: uuid
+              nullable: true
+            typeMouvement:
+              type: string
+              enum: [ENTREE, SORTIE, AJUSTEMENT]
+              example: SORTIE
+            quantite:
+              type: integer
+              example: 2
+            date:
+              type: string
+              format: date
+            raison:
+              type: string
+              nullable: true
+            quantiteAvant:
+              type: integer
+              example: 100
+            quantiteApres:
+              type: integer
+              example: 98
+            refAuteur:
+              type

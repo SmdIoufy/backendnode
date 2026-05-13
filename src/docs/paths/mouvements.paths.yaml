@@ -1,0 +1,87 @@
+paths:
+  /mouvements:
+    get:
+      tags: [Mouvements]
+      summary: Lister les mouvements de stock
+      operationId: listMouvements
+      description: |
+        Journal immuable — lecture seule.
+        Aucun mouvement ne peut être créé, modifié ou supprimé manuellement.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: typeMouvement
+          in: query
+          schema:
+            type: string
+            enum: [ENTREE, SORTIE, AJUSTEMENT]
+        - name: Var_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filtrer par variante
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-01-01"
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-12-31"
+      responses:
+        '200':
+          description: Liste des mouvements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMouvements'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mouvements/{id}:
+    get:
+      tags: [Mouvements]
+      summary: Détail d'un mouvement
+      operationId: getMouvementById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Mouvement trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/MouvementStock'
+        '404':
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
