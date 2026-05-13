@@ -1,0 +1,176 @@
+paths:
+  /audit/activites:
+    get:
+      tags: [Audit]
+      summary: Journal des activités
+      operationId: getActivites
+      description: |
+        Liste chronologique de toutes les créations et modifications
+        sur les Ventes, Approvisionnements et Inventaires.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-01-01"
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-12-31"
+      responses:
+        '200':
+          description: Journal des activités
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        typeEntite:
+                          type: string
+                          enum: [VENTE, APPROVISIONNEMENT, INVENTAIRE]
+                        reference:
+                          type: string
+                        statut:
+                          type: string
+                        creePar:
+                          type: string
+                        modifiePar:
+                          type: string
+                          nullable: true
+                        dateCreation:
+                          type: string
+                          format: date-time
+                        dateModification:
+                          type: string
+                          format: date-time
+
+  /audit/mouvements-stock:
+    get:
+      tags: [Audit]
+      summary: Journal des mouvements de stock
+      operationId: getMouvementsStock
+      description: |
+        Historique complet et immuable de tous les mouvements de stock.
+        Chaque entrée, sortie ou ajustement est tracé avec l'auteur et les quantités avant/après.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: typeMouvement
+          in: query
+          schema:
+            type: string
+            enum: [ENTREE, SORTIE, AJUSTEMENT]
+        - name: Var_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filtrer par variante produit
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Journal des mouvements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        typeMouvement:
+                          type: string
+                          enum: [ENTREE, SORTIE, AJUSTEMENT]
+                        quantite:
+                          type: integer
+                        quantiteAvant:
+                          type: integer
+                        quantiteApres:
+                          type: integer
+                        dimension:
+                          type: string
+                        familleNom:
+                          type: string
+                        refAuteur:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+                        sourceType:
+                          type: string
+                          enum: [VENTE, APPROVISIONNEMENT, INVENTAIRE, MANUEL]
+                        sourceReference:
+                          type: string
+                          nullable: true
+
+  /audit/activites/utilisateur/{firebaseUid}:
+    get:
+      tags: [Audit]
+      summary: Activités d'un utilisateur
+      operationId: getActivitesUtilisateur
+      parameters:
+        - name: firebaseUid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Activités de l'utilisateur

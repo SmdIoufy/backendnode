@@ -14,4 +14,6 @@ module.exports = [
   { name: 'Inventaires',        description: 'Sessions inventaire physique'      },
   { name: 'Mouvements',         description: 'Journal des mouvements de stock'   },
   { name: 'Statistiques',       description: 'Tableaux de bord et analyses'      },
+
+{ name: 'Audit', description: 'Journal des activités et traçabilité des opérations' },
 ];
