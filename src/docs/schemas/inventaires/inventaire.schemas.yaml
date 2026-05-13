@@ -1,0 +1,106 @@
+components:
+  schemas:
+    LigneInventaire:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        Var_id:
+          type: string
+          format: uuid
+        quantiteTheorique:
+          type: integer
+          example: 10
+        quantitePhysique:
+          type: integer
+          example: 8
+        ecart:
+          type: integer
+          example: -2
+        prixAchatSnapshot:
+          type: number
+          example: 1200
+        prixVenteSnapshot:
+          type: number
+          example: 2500
+        observation:
+          type: string
+          nullable: true
+        dimension:
+          type: string
+          nullable: true
+        familleNom:
+          type: string
+
+    Inventaire:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          properties:
+            date:
+              type: string
+              format: date
+            description:
+              type: string
+              nullable: true
+            totalQuantiteTheorique:
+              type: integer
+              example: 100
+            totalQuantitePhysique:
+              type: integer
+              example: 95
+            ecartTotal:
+              type: integer
+              example: -5
+            valeurStockPhysique:
+              type: number
+              example: 114000
+            valeurStockTheorique:
+              type: number
+              example: 120000
+            statut:
+              type: string
+              enum: [EN_COURS, VALIDE, ANNULE]
+              example: EN_COURS
+            lignes:
+              type: array
+              items:
+                $ref: '#/components/schemas/LigneInventaire'
+
+    CreateLigneInventaireDto:
+      type: object
+      required: [Var_id, quantitePhysique]
+      properties:
+        Var_id:
+          type: string
+          format: uuid
+        quantitePhysique:
+          type: integer
+          minimum: 0
+        observation:
+          type: string
+          nullable: true
+
+    CreateInventaireDto:
+      type: object
+      required: [lignes]
+      properties:
+        description:
+          type: string
+          nullable: true
+        lignes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateLigneInventaireDto'
+
+    PaginatedInventaires:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Inventaire'
