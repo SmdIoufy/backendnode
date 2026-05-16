@@ -9,6 +9,7 @@ router.use(authenticate);
 
 router.get('/',            controller.list);
 router.post('/',           controller.create);
+router.get('/:id/recu',    controller.recu);
 router.get('/:id',         controller.getById);
 router.patch('/:id/statut', controller.updateStatut);
 

@@ -7,8 +7,10 @@ const { authenticate } = require('../../middlewares/auth.middleware');
 
 router.use(authenticate);
 
-router.get('/',    controller.list);
-router.get('/:id', controller.getById);
+// ⚠️ /me DOIT être avant /:id sinon Express croit que "me" est un id
+router.get('/me',    controller.getMe);
+router.get('/',      controller.list);
+router.get('/:id',   controller.getById);
 router.patch('/:id', controller.update);
 
 module.exports = router;

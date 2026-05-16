@@ -1,7 +1,8 @@
 'use strict';
 
-const service  = require('./ventes.service');
-const AppError = require('../../utils/AppError');
+const service     = require('./ventes.service');
+const recuService = require('./vente.recu.service');
+const AppError    = require('../../utils/AppError');
 const { createVenteSchema, updateStatutSchema } = require('./ventes.validation');
 
 async function list(req, res, next) {
@@ -22,6 +23,21 @@ async function getById(req, res, next) {
     if (!vente) throw new AppError('Vente introuvable', 404, 'NOT_FOUND');
     return res.json({ success: true, data: vente });
   } catch (err) { next(err); }
+}
+
+async function recu(req, res, next) {
+  try {
+    const result = await recuService.getRecuVente(req.params.id);
+    return res.json({ success: true, data: result });
+  } catch (err) {
+    if (err === 'VENTE_NOT_FOUND') {
+      return res.status(404).json({
+        success: false,
+        message: 'Vente introuvable',
+      });
+    }
+    next(err);
+  }
 }
 
 async function create(req, res, next) {
@@ -49,4 +65,4 @@ async function updateStatut(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { list, getById, create, updateStatut };
+module.exports = { list, getById, recu, create, updateStatut };
