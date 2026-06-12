@@ -1,6 +1,7 @@
 'use strict';
 
 const { db } = require('../../config/database');
+const { v4: uuidv4 } = require('uuid');
 
 async function findAll({ page = 1, limit = 20, search } = {}) {
   const offset = (page - 1) * limit;
@@ -42,6 +43,43 @@ async function findByFirebaseUid(firebaseUid) {
   return user || null;
 }
 
+// NOUVEAU : trouve l'utilisateur ou le crée automatiquement (1ère connexion)
+async function findOrCreateByFirebaseUid(firebaseUid, email) {
+  const existing = await findByFirebaseUid(firebaseUid);
+  if (existing) {
+    // Mise à jour des stats de connexion
+    await db('User').where('firebaseUid', firebaseUid).update({
+      loginCount: existing.loginCount + 1,
+      lastLoginAt: db.fn.now(),
+    });
+    return findByFirebaseUid(firebaseUid);
+  }
+
+  // Création d'un nouvel utilisateur
+  const id = uuidv4();
+
+  await db('BaseEntity').insert({
+    id,
+    dateCreation: db.fn.now(),
+    dateModification: db.fn.now(),
+    version: 1,
+  });
+
+  await db('User').insert({
+    id,
+    firebaseUid,
+    email,
+    displayName: email.split('@')[0],
+    role: 'GERANT',
+    isActive: true,
+    isBlocked: false,
+    loginCount: 1,
+    lastLoginAt: db.fn.now(),
+  });
+
+  return findById(id);
+}
+
 async function update(id, data) {
   const user = await findById(id);
   await db('User').where('id', id).update({ ...data });
@@ -52,4 +90,10 @@ async function update(id, data) {
   return findById(id);
 }
 
-module.exports = { findAll, findById, findByFirebaseUid, update };
+module.exports = {
+  findAll,
+  findById,
+  findByFirebaseUid,
+  findOrCreateByFirebaseUid,
+  update,
+};

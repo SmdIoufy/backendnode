@@ -8,7 +8,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 
-signInWithEmailAndPassword(auth, "sambamoussadiouf@gmail.com", "smd1608")
+signInWithEmailAndPassword(auth, "sambamoussadiouf@gmail.com", "admin1608")
   .then(cred => cred.user.getIdToken())
   .then(token => {
     // Token sur une seule ligne sans espace

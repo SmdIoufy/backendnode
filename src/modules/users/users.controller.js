@@ -14,17 +14,13 @@ async function list(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// GET /users/me  ← NOUVEAU
+// GET /users/me  ← MODIFIÉ : auto-création si l'utilisateur n'existe pas encore
 async function getMe(req, res, next) {
   try {
-    const user = await usersService.findByFirebaseUid(req.user.uid);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Utilisateur introuvable',
-        code: 'USER_NOT_FOUND',
-      });
-    }
+    const user = await usersService.findOrCreateByFirebaseUid(
+      req.user.uid,
+      req.user.email
+    );
     return res.status(200).json({ success: true, data: user });
   } catch (err) { next(err); }
 }
