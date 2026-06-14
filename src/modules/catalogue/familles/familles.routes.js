@@ -4,8 +4,11 @@ const express    = require('express');
 const router     = express.Router();
 const controller = require('./familles.controller');
 const { authenticate } = require('../../../middlewares/auth.middleware');
+const { requireRole } = require('../../../middlewares/requireRole');
 
+// Le catalogue est accessible aux rôles admin et gérant.
 router.use(authenticate);
+router.use(requireRole('admin', 'gerant'));
 
 router.get('/',       controller.list);
 router.post('/',      controller.create);

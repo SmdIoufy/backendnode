@@ -1,10 +1,14 @@
 'use strict';
 
 const { admin } = require('../config/firebase');
+const usersService = require('../modules/users/users.service');
 
 async function authenticate(req, res, next) {
   try {
-    // 1. Récupérer le token dans le header
+    if (req.user?.uid && req.user?.email && req.user?.id && req.user?.role) {
+      return next();
+    }
+
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -15,16 +19,25 @@ async function authenticate(req, res, next) {
       });
     }
 
-    // 2. Extraire le token
     const token = authHeader.split('Bearer ')[1];
 
-    // 3. Vérifier le token avec Firebase
     const decodedToken = await admin.auth().verifyIdToken(token);
 
-    // 4. Attacher l'utilisateur à la requête
+    const user = await usersService.findByFirebaseUid(decodedToken.uid);
+
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: 'Accès refusé : utilisateur non enregistré',
+        code:    'USER_NOT_REGISTERED',
+      });
+    }
+
     req.user = {
       uid:   decodedToken.uid,
       email: decodedToken.email,
+      id:    user.id,
+      role:  user.role,
     };
 
     next();

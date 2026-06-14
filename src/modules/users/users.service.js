@@ -43,38 +43,37 @@ async function findByFirebaseUid(firebaseUid) {
   return user || null;
 }
 
-// NOUVEAU : trouve l'utilisateur ou le crée automatiquement (1ère connexion)
-async function findOrCreateByFirebaseUid(firebaseUid, email) {
-  const existing = await findByFirebaseUid(firebaseUid);
-  if (existing) {
-    // Mise à jour des stats de connexion
-    await db('User').where('firebaseUid', firebaseUid).update({
-      loginCount: existing.loginCount + 1,
-      lastLoginAt: db.fn.now(),
-    });
-    return findByFirebaseUid(firebaseUid);
-  }
+async function createUser({ email, password, displayName, phoneNumber }) {
+  const { admin } = require('../../config/firebase');
 
-  // Création d'un nouvel utilisateur
+  const firebaseUser = await admin.auth().createUser({
+    email,
+    password,
+    displayName: displayName || email.split('@')[0],
+  });
+
+  await admin.auth().setCustomUserClaims(firebaseUser.uid, { role: 'GERANT' });
+
   const id = uuidv4();
 
   await db('BaseEntity').insert({
     id,
-    dateCreation: db.fn.now(),
+    dateCreation:     db.fn.now(),
     dateModification: db.fn.now(),
-    version: 1,
+    version:          1,
   });
 
   await db('User').insert({
     id,
-    firebaseUid,
+    firebaseUid:  firebaseUser.uid,
     email,
-    displayName: email.split('@')[0],
-    role: 'GERANT',
-    isActive: true,
-    isBlocked: false,
-    loginCount: 1,
-    lastLoginAt: db.fn.now(),
+    displayName:  displayName || email.split('@')[0],
+    phoneNumber:  phoneNumber || null,
+    role:         'GERANT',
+    isActive:     true,
+    isBlocked:    false,
+    loginCount:   0,
+    lastLoginAt:  null,
   });
 
   return findById(id);
@@ -90,10 +89,17 @@ async function update(id, data) {
   return findById(id);
 }
 
+async function setFirebaseRole(uid, role) {
+  const { admin } = require('../../config/firebase');
+  await admin.auth().setCustomUserClaims(uid, { role });
+  return { uid, role };
+}
+
 module.exports = {
   findAll,
   findById,
   findByFirebaseUid,
-  findOrCreateByFirebaseUid,
+  createUser,
   update,
+  setFirebaseRole,
 };

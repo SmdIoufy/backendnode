@@ -8,6 +8,17 @@ const updateUserSchema = Joi.object({
   role:        Joi.string().valid('GERANT', 'ADMIN'),
   isActive:    Joi.boolean(),
   isBlocked:   Joi.boolean(),
-}).min(1); // Au moins un champ requis
+}).min(1);
 
-module.exports = { updateUserSchema };
+const setUserRoleSchema = Joi.object({
+  role: Joi.string().valid('GERANT', 'ADMIN').required(),
+});
+
+const createUserSchema = Joi.object({
+  email:       Joi.string().email().required(),
+  displayName: Joi.string().min(2).max(100),
+  phoneNumber: Joi.string().max(20),
+  password:    Joi.string().min(6).required(),
+});
+
+module.exports = { updateUserSchema, setUserRoleSchema, createUserSchema };

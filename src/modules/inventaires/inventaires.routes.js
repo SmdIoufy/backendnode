@@ -4,8 +4,11 @@ const express    = require('express');
 const router     = express.Router();
 const controller = require('./inventaires.controller');
 const { authenticate } = require('../../middlewares/auth.middleware');
+const { requireRole } = require('../../middlewares/requireRole');
 
+// Les inventaires modifient le stock, donc admin et gérant uniquement.
 router.use(authenticate);
+router.use(requireRole('admin', 'gerant'));
 
 router.get('/',              controller.list);
 router.post('/',             controller.create);

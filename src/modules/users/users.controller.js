@@ -1,9 +1,8 @@
 'use strict';
 
 const usersService = require('./users.service');
-const { updateUserSchema } = require('./users.validation');
+const { updateUserSchema, setUserRoleSchema, createUserSchema } = require('./users.validation');
 
-// GET /users
 async function list(req, res, next) {
   try {
     const page   = parseInt(req.query.page)  || 1;
@@ -14,18 +13,20 @@ async function list(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// GET /users/me  ← MODIFIÉ : auto-création si l'utilisateur n'existe pas encore
 async function getMe(req, res, next) {
   try {
-    const user = await usersService.findOrCreateByFirebaseUid(
-      req.user.uid,
-      req.user.email
-    );
+    const user = await usersService.findByFirebaseUid(req.user.uid);
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: 'Accès refusé : utilisateur non enregistré',
+        code: 'USER_NOT_FOUND',
+      });
+    }
     return res.status(200).json({ success: true, data: user });
   } catch (err) { next(err); }
 }
 
-// GET /users/:id
 async function getById(req, res, next) {
   try {
     const user = await usersService.findById(req.params.id);
@@ -40,7 +41,22 @@ async function getById(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// PATCH /users/:id
+async function create(req, res, next) {
+  try {
+    const { error, value } = createUserSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Données invalides',
+        code: 'VALIDATION_ERROR',
+        errors: error.details.map(d => ({ field: d.path.join('.'), message: d.message })),
+      });
+    }
+    const user = await usersService.createUser(value);
+    return res.status(201).json({ success: true, data: user });
+  } catch (err) { next(err); }
+}
+
 async function update(req, res, next) {
   try {
     const { error, value } = updateUserSchema.validate(req.body);
@@ -64,4 +80,23 @@ async function update(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { list, getMe, getById, update };
+async function setRole(req, res, next) {
+  try {
+    const { error, value } = setUserRoleSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Données invalides',
+        code: 'VALIDATION_ERROR',
+        errors: error.details.map(d => ({ field: d.path.join('.'), message: d.message })),
+      });
+    }
+    await usersService.setFirebaseRole(req.params.uid, value.role);
+    return res.status(200).json({
+      success: true,
+      message: 'Rôle mis à jour avec succès',
+    });
+  } catch (err) { next(err); }
+}
+
+module.exports = { list, getMe, getById, create, update, setRole };
